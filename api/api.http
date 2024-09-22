@@ -1,0 +1,16 @@
+### API Requests 
+
+
+### CEP request 
+
+GET http://localhost:3000/cep/11075301 HTTP/1.1
+
+
+
+### Weather Request
+GET http://localhost:3000/weather HTTP/1.1
+
+
+
+### Get Temperature by cep
+GET http://localhost:3000/temp/11075301 HTTP/1.1
