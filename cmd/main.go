@@ -2,14 +2,17 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/vinicius-gregorio/fc_cloud_run/config"
 	external_repository "github.com/vinicius-gregorio/fc_cloud_run/external/repository"
+	"github.com/vinicius-gregorio/fc_cloud_run/external/response"
 	"github.com/vinicius-gregorio/fc_cloud_run/infra"
 	"github.com/vinicius-gregorio/fc_cloud_run/internal/entity"
+	"github.com/vinicius-gregorio/fc_cloud_run/internal/failures"
 	"github.com/vinicius-gregorio/fc_cloud_run/internal/usecase"
 )
 
@@ -52,13 +55,32 @@ func getRoutes(getWeatherUsecase usecase.GetWeatherButCEPUsecase) []infra.HTTPRo
 				}
 				output, err := getWeatherUsecase.Call(input)
 				if err != nil {
+					// Check if the error indicates a missing or invalid CEP and return 404
+					if errors.Is(err, failures.ErrCepNotFound) { // Assume ErrLocationNotFound is defined in your entity package
+						w.WriteHeader(http.StatusNotFound)
+						w.Write([]byte("Location not found for the given CEP"))
+						return
+					}
+
+					// For other errors, return a 500 error
 					w.WriteHeader(http.StatusInternalServerError)
 					w.Write([]byte(err.Error()))
 					return
 				}
+				tempC := output.Weather.Current.TempC
+				tempF := output.Weather.Current.TempF
+				tempK := tempC + 273.15
+
+				// Create the response with extracted temperatures
+				response := response.TemperatureResponse{
+					TempC: tempC,
+					TempF: tempF,
+					TempK: tempK,
+				}
+				// Set the response header and encode the response as JSON
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				json.NewEncoder(w).Encode(output)
+				json.NewEncoder(w).Encode(response)
 
 			},
 		},

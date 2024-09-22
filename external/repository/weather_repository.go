@@ -3,11 +3,14 @@ package external_repository
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 
 	"github.com/vinicius-gregorio/fc_cloud_run/config"
+	"github.com/vinicius-gregorio/fc_cloud_run/external/response"
 	"github.com/vinicius-gregorio/fc_cloud_run/internal/entity"
+	"github.com/vinicius-gregorio/fc_cloud_run/internal/failures"
 )
 
 // WeatherRepositoryImpl is the implementation of the WeatherRepository interface.
@@ -21,27 +24,50 @@ func NewWeatherRepositoryImpl(cfg *config.EnvConfig) *WeatherRepositoryImpl {
 }
 
 // GetLocationInfoByCep fetches location information using the CEP API.
+// GetLocationInfoByCep fetches location information using the CEP API.
 func (repo *WeatherRepositoryImpl) GetLocationInfoByCep(cep string) (*entity.Location, error) {
 	var loc entity.Location
+	var errorResp response.ErrorResponse
+
+	// Construct the request URL
 	url := fmt.Sprintf("%s/%s/json/", repo.config.CEPAPIURL, cep)
 	fmt.Println(url)
+
+	// Create the HTTP request
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
+	// Perform the HTTP request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	if err := json.NewDecoder(resp.Body).Decode(&loc); err != nil {
-		return nil, err
+
+	// Read the entire response body to handle potential errors and decoding issues
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %v", err)
+	}
+
+	// Print the response body for debugging purposes
+	bodyString := string(bodyBytes)
+	fmt.Println("Response Body:", bodyString)
+
+	// Attempt to unmarshal the response into the error struct first
+	if err := json.Unmarshal(bodyBytes, &errorResp); err == nil && errorResp.Erro == "true" {
+		return nil, failures.ErrCepNotFound
+	}
+
+	// Attempt to unmarshal the response into the Location struct if no errors were detected
+	if err := json.Unmarshal(bodyBytes, &loc); err != nil {
+		return nil, fmt.Errorf("failed to decode location response: %v", err)
 	}
 
 	return &loc, nil
-
 }
 
 // GetWeatherByLocation fetches weather information using the Weather API.
