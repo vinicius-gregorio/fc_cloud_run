@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"fmt"
+
 	"github.com/vinicius-gregorio/fc_cloud_run/internal/entity"
 	"github.com/vinicius-gregorio/fc_cloud_run/internal/repository"
 )
@@ -29,6 +31,13 @@ func NewGetWeatherUseCase(repo repository.WeatherRepository) *GetWeatherUseCase 
 
 // Call implements the GetWeatherButCEPUsecase interface.
 func (uc *GetWeatherUseCase) Call(input GetWeatherInputDTO) (*GetWeatherOutputDTO, error) {
+
+	_, err := entity.NewLocationByCEP(input.Cep)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
 	// Step 1: Get location information by CEP
 	location, err := uc.repo.GetLocationInfoByCep(input.Cep)
 	if err != nil {

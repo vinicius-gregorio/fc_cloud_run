@@ -46,6 +46,11 @@ func getRoutes(getWeatherUsecase usecase.GetWeatherButCEPUsecase) []infra.HTTPRo
 				fmt.Println("http request cep is:   |", cep, "|")
 				nl, err := entity.NewLocationByCEP(cep)
 				if err != nil {
+					if errors.Is(err, failures.ErrCepInvalid_Digits) || errors.Is(err, failures.ErrCepInvalid_Length) { // Assume ErrLocationNotFound is defined in your entity package
+						w.WriteHeader(http.StatusUnprocessableEntity)
+						w.Write([]byte("invalid zipcode"))
+						return
+					}
 					w.WriteHeader(http.StatusBadRequest)
 					w.Write([]byte(err.Error()))
 					return
@@ -58,7 +63,7 @@ func getRoutes(getWeatherUsecase usecase.GetWeatherButCEPUsecase) []infra.HTTPRo
 					// Check if the error indicates a missing or invalid CEP and return 404
 					if errors.Is(err, failures.ErrCepNotFound) { // Assume ErrLocationNotFound is defined in your entity package
 						w.WriteHeader(http.StatusNotFound)
-						w.Write([]byte("Location not found for the given CEP"))
+						w.Write([]byte("can not find zipcode"))
 						return
 					}
 
