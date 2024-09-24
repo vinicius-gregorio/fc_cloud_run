@@ -31,7 +31,6 @@ func (repo *WeatherRepositoryImpl) GetLocationInfoByCep(cep string) (*entity.Loc
 
 	// Construct the request URL
 	url := fmt.Sprintf("%s/%s/json/", repo.config.CEPAPIURL, cep)
-	fmt.Println(url)
 
 	// Create the HTTP request
 	req, err := http.NewRequest("GET", url, nil)
@@ -82,8 +81,6 @@ func (repo *WeatherRepositoryImpl) GetWeatherByLocation(location entity.Location
 	// Construct the URL using the encoded parameters
 	url := fmt.Sprintf("%s/v1/current.json?q=%s,%s,%s&key=%s",
 		repo.config.WeatherAPIURL, localidade, uf, country, repo.config.WeatherAPIKey)
-
-	fmt.Println(url)
 
 	// Create the HTTP request
 	req, err := http.NewRequest("GET", url, nil)

@@ -1,0 +1,22 @@
+### API Requests 
+
+
+
+### Get Temperature by cep - W O R K I N G
+GET http://localhost:3000/temp/11075301 HTTP/1.1
+
+
+### Get Temperature by cep - Not Found CEP
+GET http://localhost:3000/temp/33333333 HTTP/1.1
+
+
+### Get Temperature by cep - Malformed CEP (not enough digits)
+GET http://localhost:3000/temp/3213 HTTP/1.1
+
+
+### Get Temperature by cep - Malformed CEP (too many digits)
+GET http://localhost:3000/temp/3212222222223 HTTP/1.1
+
+
+### Get Temperature by cep - Malformed CEP (not a number)
+GET http://localhost:3000/temp/3212a3 HTTP/1.1

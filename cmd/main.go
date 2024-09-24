@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/vinicius-gregorio/fc_cloud_run/config"
@@ -22,10 +22,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	port := os.Getenv("PORT") // Set by Cloud Run
+	if port == "" {
+		port = config.WebServerPort
+	}
 
-	println(config.WeatherAPIKey)
-	println(config.WeatherAPIURL)
-	println(config.CEPAPIURL)
+	config.WebServerPort = port
 
 	weatherRepo := external_repository.NewWeatherRepositoryImpl(config)
 	weatherUseCase := usecase.NewGetWeatherUseCase(weatherRepo)
@@ -43,7 +45,6 @@ func getRoutes(getWeatherUsecase usecase.GetWeatherButCEPUsecase) []infra.HTTPRo
 				// get the CEP from the URL
 				cep := chi.URLParam(r, "cep")
 
-				fmt.Println("http request cep is:   |", cep, "|")
 				nl, err := entity.NewLocationByCEP(cep)
 				if err != nil {
 					if errors.Is(err, failures.ErrCepInvalid_Digits) || errors.Is(err, failures.ErrCepInvalid_Length) { // Assume ErrLocationNotFound is defined in your entity package

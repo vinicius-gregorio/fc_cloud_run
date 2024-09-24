@@ -1,8 +1,6 @@
 package entity
 
 import (
-	"fmt"
-
 	"github.com/vinicius-gregorio/fc_cloud_run/internal/failures"
 )
 
@@ -48,7 +46,6 @@ func NewLocation(cep, logradouro, complemento, unidade, bairro, localidade, uf, 
 }
 
 func NewLocationByCEP(cep string) (*Location, error) {
-	fmt.Printf("NewLocationByCEP: %s\n", cep)
 	l := &Location{
 		Cep: cep,
 	}
@@ -75,8 +72,6 @@ func (l *Location) validate() error {
 }
 
 func (l *Location) validateCEPDigits() error {
-	fmt.Println(l.Cep)
-	fmt.Println(len(l.Cep))
 	if len(l.Cep) != 8 {
 		return failures.ErrCepInvalid_Length
 	}

@@ -1,7 +1,6 @@
 package infra
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -19,7 +18,6 @@ func StartHTTPServer(routes []HTTPRoute, port string) {
 	r := chi.NewRouter()
 	registerMiddlewares(r)
 	registerRoutes(r, routes)
-	fmt.Print("Starting HTTP server on port ", port)
 	http.ListenAndServe(":"+port, r)
 }
 
@@ -31,7 +29,6 @@ func registerRoutes(r *chi.Mux, routes []HTTPRoute) {
 		case "POST":
 			r.Post(route.Path, route.Handler)
 		}
-		fmt.Println("Registered route: ", route.Path)
 	}
 }
 
