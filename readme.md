@@ -13,4 +13,9 @@ With docker, use the following command to run it locally:
 
 
 ## Deployed to Cloud Run
+# LINK >>>>>>>>>>>> https://server-image-233313523725.us-central1.run.app 
+
+# LINK REQUEST >>> https://server-image-233313523725.us-central1.run.app/temp/11075301
+
+# All the links are in prod.http.
 ![image](https://github.com/user-attachments/assets/a71915f5-1b07-426c-9484-8e8ada899c7a)
