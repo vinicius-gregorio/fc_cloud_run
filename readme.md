@@ -12,8 +12,9 @@ With docker, use the following command to run it locally:
 ` $ docker run -p 3000:3000 -e PORT=3000 docker.io/viniboyz/server-image:v1.0` 
 
 
-## Deployed to Cloud Run
-# LINK >>>>>>>>>>>> https://server-image-233313523725.us-central1.run.app 
+# Deployed to Cloud Run
+
+# Cloud run linkLINK >>>>>>>>>>>> https://server-image-233313523725.us-central1.run.app 
 
 # LINK REQUEST >>> https://server-image-233313523725.us-central1.run.app/temp/11075301
 
